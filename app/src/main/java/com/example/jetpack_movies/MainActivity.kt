@@ -8,8 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,6 +17,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -25,10 +25,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
@@ -101,12 +104,16 @@ fun HomeScreenDisplay(itemList: List<Movie>) {
                 Row(modifier = Modifier
                     .fillParentMaxWidth()
                     .clickable(onClick = {
-                        startActivity(context, intent.putExtra("movieId", eachItem.movieId.toString()), null)
+                        startActivity(
+                            context,
+                            intent.putExtra("movieId", eachItem.movieId.toString()),
+                            null
+                        )
                     }),
                     content = {
                         Card(
                             shape = RoundedCornerShape(4.dp),
-                            backgroundColor = Color.LightGray,
+                            backgroundColor = Color.Transparent,
                             modifier = Modifier
                                 .fillParentMaxWidth()
                                 .padding(16.dp),
@@ -124,11 +131,12 @@ fun HomeScreenDisplay(itemList: List<Movie>) {
 fun MoviePoster(item : Movie, modifier: Modifier = Modifier) {
     ListItem(text = {
         Text(
+            maxLines = 2,
             text = item.movieName,
             modifier = Modifier.padding(16.dp, 16.dp),
             style = TextStyle(
                 color = Color.DarkGray,
-                fontSize = 20.sp,
+                fontSize = 22.sp,
                 fontFamily = FontFamily.Serif,
                 textAlign = TextAlign.Center
             )
@@ -137,6 +145,8 @@ fun MoviePoster(item : Movie, modifier: Modifier = Modifier) {
             painter = rememberCoilPainter(
                 request = item.getImageUri()
             ),
+            modifier = Modifier
+                .fillMaxHeight(),
             contentDescription = "Movie Image - ${item.movieName}"
         )
     })
@@ -155,25 +165,24 @@ fun MainAppContent(itemList: List<Movie>) {
             homeScreenNavType = homeScreenState.value,
             modifier = Modifier.weight(1f)
         )
-//        BottomNavigationContent(
-//            homeScreenState = homeScreenState,
-//            modifier = Modifier
-//                .semantics { contentDescription = bottomBarContentDescription }
-//        )
+        BottomNavigationContent(
+            homeScreenState = homeScreenState,
+            modifier = Modifier
+                .semantics { contentDescription = bottomBarContentDescription }
+        )
     }
 }
 
 @Composable
 fun BottomNavigationContent(
     homeScreenState: MutableState<BottomNavType>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var animate by remember { mutableStateOf(false) }
 
-    BottomNavigation(modifier = modifier) {
+    BottomNavigation(modifier = Modifier.background(MaterialTheme.colors.onBackground)) {
         BottomNavigationItem(
-            icon =
-            { Icon(imageVector = Icons.Filled.Home, stringResource(id = R.string.navigation_item_home)) },
+            icon = { R.drawable.ic_baseline_home_24 },
             selected = homeScreenState.value == BottomNavType.HOME,
             onClick = {
                 homeScreenState.value = BottomNavType.HOME
@@ -182,7 +191,7 @@ fun BottomNavigationContent(
             label = { Text(text = stringResource(id = R.string.navigation_item_home)) }
         )
         BottomNavigationItem(
-            icon = { Icon(imageVector = Icons.Filled.Menu, stringResource(id = R.string.navigation_item_widgets)) },
+            icon = { R.drawable.ic_baseline_favorite_24 },
             selected = homeScreenState.value == BottomNavType.WIDGETS,
             onClick = {
                 homeScreenState.value = BottomNavType.WIDGETS
