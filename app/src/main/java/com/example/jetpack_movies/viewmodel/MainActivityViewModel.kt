@@ -32,7 +32,7 @@ class MainActivityViewModel (private val movieRepository : MovieRepository) : Vi
 //        _itemListLiveData.postValue(itemList)
 
         viewModelScope.launch {
-            val movieList = movieRepository.fetchMoviesFromApi()
+            val movieList = movieRepository.fetchMovies(false)
             if (movieList.isNullOrEmpty()) {
                 _itemListLiveData.postValue(null)
             } else {

@@ -1,6 +1,9 @@
 package com.example.jetpack_movies
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.provider.AlarmClock.EXTRA_MESSAGE
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -20,6 +23,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -27,11 +31,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import com.example.jetpack_movies.models.Movie
 import com.example.jetpack_movies.ui.theme.Jetpack_MoviesTheme
 import com.example.jetpack_movies.viewmodel.MainActivityViewModel
 import com.example.jetpack_movies.viewmodel.MainActivityViewModelFactory
 import com.google.accompanist.coil.rememberCoilPainter
+import java.io.Serializable
 
 //@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -74,11 +80,12 @@ fun Greeting(name: String) {
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreenDisplay(itemList: List<Movie>) {
-    var showPopup by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val intent = Intent(context, DetailActivity::class.java)
 
     Column() {
         Text(
-            text = "You're on ${itemList[0].movieName}",
+            text = "Jet Movies",
             modifier = Modifier.padding(20.dp, 20.dp),
             style = TextStyle(
                 color = Color.DarkGray,
@@ -93,7 +100,9 @@ fun HomeScreenDisplay(itemList: List<Movie>) {
                 val index = itemList.indexOf(eachItem)
                 Row(modifier = Modifier
                     .fillParentMaxWidth()
-                    .clickable(onClick = { showPopup = true }),
+                    .clickable(onClick = {
+                        startActivity(context, intent.putExtra("movieId", eachItem.movieId.toString()), null)
+                    }),
                     content = {
                         Card(
                             shape = RoundedCornerShape(4.dp),
@@ -107,22 +116,7 @@ fun HomeScreenDisplay(itemList: List<Movie>) {
                     })
             })
         }
-
-        val onPopupDismissed = { showPopup = false }
-        if (showPopup) {
-            DisplayPopupDialog(onPopupDismissed = onPopupDismissed)
-        }
     }
-}
-
-@Composable
-fun DisplayPopupDialog(onPopupDismissed: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onPopupDismissed,
-        text = { Text(text = "Clicked!!!")},
-        confirmButton = { Button(onClick = onPopupDismissed) { Text(text = "Ok") }
-        }
-    )
 }
 
 @ExperimentalMaterialApi
