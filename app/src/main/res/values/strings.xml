@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Jetpack_Movies</string>
+
+    <string name="bottom_navigation_bar">Bottom navigation bar with actions </string>
+    <string name="navigation_item_home">Home</string>
+    <string name="navigation_item_widgets">Widgets</string>
+    <string name="title_activity_detail">DetailActivity</string>
 </resources>
